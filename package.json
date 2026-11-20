@@ -1,0 +1,8 @@
+{
+  "name":"kalesh-exe",
+  "private":true,
+  "version":"1.0.0",
+  "description":"KALESH.EXE — Balaks vs Bataks meme controversy arcade",
+  "scripts":{"dev":"http-server -p 4173 -a 127.0.0.1 -c-1","start":"http-server -p 4173 -a 0.0.0.0 -c-1"},
+  "license":"MIT"
+}
