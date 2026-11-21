@@ -35,7 +35,8 @@ const DEMO_PEOPLE = [
   { id: 'seed-5', handle: 'samosaceo', x_username: 'samosaCEO', x_verified: true, avatar_emoji: '🍟', gang: 'balaks', title: 'CEO of Yapping' },
   { id: 'seed-6', handle: 'emotionaldamage', avatar_emoji: '👽', gang: 'bataks' },
   { id: 'seed-7', handle: 'bas_kar_bhai', avatar_emoji: '💀', gang: 'balaks' },
-  { id: 'seed-8', handle: 'duckzilla', avatar_emoji: '🤡', gang: 'bataks' }
+  { id: 'seed-8', handle: 'duckzilla', avatar_emoji: '🤡', gang: 'bataks' },
+  { id: 'kalesh-desk', handle: 'kalesh_desk', avatar_emoji: '📡', title: 'KALESH DESK', desk: true }
 ];
 const DEMO_RESERVED = [
   { handle: 'billi_ceo', x_username: 'billi_ceo_demo', display_name: 'Billi CEO (fictional demo)', title: 'Founding Server Cat', bio: 'This handle is reserved for its X owner. Log in with that X account to claim it.', avatar_emoji: '😼', claimed_by: null }
@@ -51,14 +52,43 @@ const DEMO_POSTS = [
   P('demo-7', 'seed-7', 25, '“My final statement” — thread six of an ongoing twelve-part final statement', 'Bhai ka final boss bhi final nahi hai. The sequel is already announced.', ['threads', 'drama'], 7.5, 22, 110, '🎤', 'THE FINAL FINAL FINAL'),
   P('demo-8', 'seed-8', 33, 'Someone ranked traffic jams by cinematic universe. Twitter took it personally.', 'The roundabout has entered its villain arc. Reviews are mixed.', ['traffic', 'gta6'], 8.2, 20, 199, '🚗', 'GTA 6 SE PEHLE TRAFFIC'),
   P('demo-bangalore', 'seed-1', 4, 'Bangalore anna declared every other city’s filter coffee illegal', 'The group chat demanded a blind taste test. It turned into a debate about traffic, rent and the correct way to say Bengaluru.', ['bangalore', 'food'], 8.9, 24, 128, '☕', 'ANNA APPROVAL PENDING'),
-  P('demo-biryani', 'seed-2', 6, 'Hyderabadi biryani group chat split over one boiled egg', 'Someone ranked the egg above the rice. The recipe thread now has rival manifestos and an emergency dinner plan.', ['biryani', 'food'], 9.1, 27, 160, '🍚', 'DUM PE DRAMA')
+  P('demo-biryani', 'seed-2', 6, 'Hyderabadi biryani group chat split over one boiled egg', 'Someone ranked the egg above the rice. The recipe thread now has rival manifestos and an emergency dinner plan.', ['biryani', 'food'], 9.1, 27, 160, '🍚', 'DUM PE DRAMA'),
+  ...demoDeskPosts()
+];
+/* KALESH DESK demo: fictional tweet snapshots in the same shape as public.post_tweets rows. */
+function demoTweet(id, handle, name, avatar, h, text, media, metrics) {
+  return { tweet_id: id, url: `https://x.com/${handle}/status/${id}`, author_handle: handle, author_name: name, author_avatar: avatar, text, media: media || [], metrics: metrics || {}, tweeted_at: hoursAgo(h), snapshot_source: 'demo' };
+}
+function deskPost(id, h, side, title, note, tags, tweets, seed) {
+  return { id, user_id: 'kalesh-desk', source: 'desk', side, title, description: note || tweets[0].text, x_url: tweets[0].url, tags, tweets, created_at: hoursAgo(h), status: 'published', seed: seed || { spice: 0, count: 0, likes: 0 }, poster_emoji: '📡', poster_text: 'KALESH DESK' };
+}
+function demoDeskPosts() {
+  return [
+    deskPost('demo-desk-thread', 0.6, 'bataks', '@standup_sharma ne phir se kalesh shuru kar diya: “10x engineers don’t attend standups”', 'A 3-part thread. Fictional demo of a KALESH DESK post pulled in from the Google Sheet.', ['office', 'threads'], [
+      demoTweet('1900000000000000001', 'standup_sharma', 'Standup Sharma (demo)', '', 0.9, 'Unpopular opinion: 10x engineers don’t attend standups. Standups attend them. 🧵', [], { likes: 4200, retweets: 610, replies: 980, views: 310000 }),
+      demoTweet('1900000000000000002', 'standup_sharma', 'Standup Sharma (demo)', '', 0.85, 'If your standup has a slide deck, it is not a standup. It is a sitdown with extra steps.', [{ type: 'photo', url: 'assets/memes/rollsafe.jpg' }], { likes: 2100, retweets: 240, replies: 300 }),
+      demoTweet('1900000000000000003', 'standup_sharma', 'Standup Sharma (demo)', '', 0.8, 'Manager has replied “let’s take this offline”. The thread is now offline. Like my career.', [], { likes: 8800, retweets: 1200, replies: 1500 })
+    ], { spice: 8.6, count: 14, likes: 230 }),
+    deskPost('demo-desk-single', 3, 'balaks', 'BREAKING: @chai_vs_coffee ka naya bayaan — “filter coffee is just chai that went to IIT”', '', ['food', 'bangalore'], [
+      demoTweet('1900000000000000010', 'chai_vs_coffee', 'Chai vs Coffee (demo)', '', 3.2, 'filter coffee is just chai that went to IIT and never called home', [{ type: 'photo', url: 'assets/memes/disaster.png' }], { likes: 15300, retweets: 2900, replies: 4100, views: 1200000 })
+    ], { spice: 9.2, count: 19, likes: 410 })
+  ];
+}
+/* Demo stand-in for Supabase Realtime: these arrive while the feed is open, once per browser. */
+const DEMO_WIRE = [
+  () => deskPost('demo-wire-1', 0, 'balaks', 'Sootron ke hawale se: @pg_owner_ji — “WiFi password change kar diya, rent bhi”', 'Fictional demo: this post arrived live, like a Realtime insert from the pipeline.', ['bangalore', 'rent'], [
+    demoTweet('1900000000000000101', 'pg_owner_ji', 'PG Owner Ji (demo)', '', 0, 'WiFi password change kar diya hai. Naya password: rent_bhar_do_2026. Rent bhi change kar diya hai.', [{ type: 'photo', url: 'assets/memes/harold.png' }], { likes: 980, retweets: 120, replies: 340 })
+  ]),
+  () => deskPost('demo-wire-2', 0, 'bataks', '“Ye meeting email ho sakti thi” — @calendar_kiler. Popcorn ready rakho 🍿', 'Fictional demo: Apify-style auto-published post (engagement over the threshold).', ['office'], [
+    demoTweet('1900000000000000102', 'calendar_kiler', 'Calendar Killer (demo)', '', 0, 'Ye meeting email ho sakti thi. Ye email WhatsApp ho sakta tha. Ye WhatsApp seen-zone ho sakta tha.', [], { likes: 23100, retweets: 4100, replies: 900, views: 2400000 })
+  ])
 ];
 
 /* ───────────────────────── state ───────────────────────── */
 const STORE_KEY = 'kalesh-exe-demo-v2';
 function loadStore() { try { const s = JSON.parse(localStorage.getItem(STORE_KEY)); if (s && Array.isArray(s.posts)) return s; } catch {} return { profile: null, posts: DEMO_POSTS, votes: {}, likes: {}, reports: {}, reserved: DEMO_RESERVED }; }
 let store = loadStore();
-for (const post of DEMO_POSTS.filter(p => ['demo-bangalore', 'demo-biryani'].includes(p.id))) {
+for (const post of DEMO_POSTS.filter(p => ['demo-bangalore', 'demo-biryani', 'demo-desk-thread', 'demo-desk-single'].includes(p.id))) {
   if (!store.posts.some(p => p.id === post.id)) store.posts.push(post);
 }
 const saveStore = () => { bump(); if (S.mode === 'demo') try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch { notice('Browser storage full. Demo images might not save.'); } };
@@ -164,6 +194,9 @@ function closeOverlay() {
 const me = () => S.profile;
 const peopleById = () => { const m = {}; for (const p of DEMO_PEOPLE) m[p.id] = p; if (S.mode === 'demo' && store.profile) m[store.profile.id] = store.profile; return m; };
 function authorOf(p) { if (p.author) return p.author; return peopleById()[p.user_id] || { handle: 'anonymous', avatar_emoji: '🐈', gang: 'balaks' }; }
+// Desk/Apify posts carry their own side; user posts belong to the author's gang.
+const postGang = p => p.side || authorOf(p).gang;
+const isDeskPost = p => !!p.source && p.source !== 'user';
 const allPosts = () => S.mode === 'demo' ? store.posts : S.posts;
 function voteInfo(p) {
   if (S.mode === 'demo') { const own = store.votes[p.id] || 0, b = p.seed?.spice || 0, n = p.seed?.count || 0; return { avg: own ? (b * n + own) / (n + 1) : b, count: n + (own ? 1 : 0), mine: own }; }
@@ -181,10 +214,11 @@ function computeRankings(period) {
   for (const p of allPosts()) {
     if (period === 'week' && new Date(p.created_at).getTime() < monday) continue;
     const pts = postPoints(p); if (!pts) continue;
-    const a = authorOf(p);
+    const a = authorOf(p), g = postGang(p);
+    if (gangs[g] != null) gangs[g] += pts;
+    if (isDeskPost(p)) continue; // the desk feeds the gang war but never tops the people leaderboard
     const row = authors.get(p.user_id) || { id: p.user_id, ...a, points: 0, posts: 0 };
     row.points += pts; row.posts++; authors.set(p.user_id, row);
-    if (gangs[a.gang] != null) gangs[a.gang] += pts;
   }
   return { authors: [...authors.values()].sort((a, b) => b.points - a.points), gangs };
 }
@@ -317,10 +351,40 @@ async function openXMedia(post) {
     clearTimeout(timeout);
   }
 }
+/* ── tweet snapshots (public.post_tweets rows, or demo rows of the same shape) ── */
+const tweetMediaURL = v => { const s = String(v || ''); return /^https:\/\/(pbs|video)\.twimg\.com\/[^\s"'<>]+$/.test(s) || /^assets\/memes\/[a-z]+\.(?:jpe?g|png|gif)$/.test(s) ? s : ''; };
+const tweetAvatarURL = v => { const s = String(v || ''); return /^https:\/\/(pbs|abs)\.twimg\.com\/[^\s"'<>]+$/.test(s) ? s : ''; };
+const tweetsOf = p => (Array.isArray(p.tweets) ? p.tweets : []).slice().sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+function tweetMetrics(m) {
+  const parts = [['💬', 'replies', m?.replies], ['🔁', 'reposts', m?.retweets], ['❤️', 'likes', m?.likes], ['👁', 'views', m?.views]].filter(([, , n]) => n > 0);
+  return parts.length ? `<div class="tw-metrics">${parts.map(([i, label, n]) => `<span title="${label}">${i} ${short(n)}</span>`).join('')}</div>` : '';
+}
+function tweetMediaHTML(media) {
+  const items = (Array.isArray(media) ? media : []).map(m => ({ ...m, src: tweetMediaURL(m?.url), poster: tweetMediaURL(m?.thumb) })).filter(m => m.src).slice(0, 4);
+  if (!items.length) return '';
+  return `<div class="tw-media n${items.length}">${items.map(m => m.type === 'video' || (m.type === 'gif' && /\.mp4(\?|$)/.test(m.src))
+    ? `<video src="${esc(m.src)}" ${m.poster ? `poster="${esc(m.poster)}"` : ''} ${m.type === 'gif' && !reducedMotion() ? 'autoplay loop muted' : 'controls'} playsinline preload="none"></video>`
+    : `<img loading="lazy" referrerpolicy="no-referrer" src="${esc(m.src)}" alt="Media from the X post">`).join('')}</div>`;
+}
+function tweetCard(t) {
+  const handle = /^[A-Za-z0-9_]{1,15}$/.test(t.author_handle || '') ? t.author_handle : '';
+  const url = t.snapshot_source === 'demo' ? '' : safeURL(t.url), av = tweetAvatarURL(t.author_avatar);
+  return `<blockquote class="tw-card"><header>${av ? `<img class="tw-av" src="${esc(av)}" referrerpolicy="no-referrer" alt="">` : '<span class="tw-av" aria-hidden="true">𝕏</span>'}<div class="tw-who"><b>${esc(t.author_name || handle || 'X user')}</b><small>@${esc(handle || 'unknown')}${t.tweeted_at ? ' · ' + relTime(t.tweeted_at) : ''}</small></div>${url ? `<a class="tw-open" href="${esc(url)}" target="_blank" rel="noopener noreferrer nofollow" aria-label="Open on X">𝕏 ↗</a>` : ''}</header>${t.text ? `<p>${esc(t.text)}</p>` : ''}${tweetMediaHTML(t.media)}${tweetMetrics(t.metrics)}${{ demo: 'Fictional demo snapshot', stub: 'Demo mode: the full snapshot is saved once the site is live', oembed: 'Text-only snapshot' }[t.snapshot_source] ? `<small class="tw-note">${{ demo: 'Fictional demo snapshot', stub: 'Demo mode: the full snapshot is saved once the site is live', oembed: 'Text-only snapshot' }[t.snapshot_source]}</small>` : ''}</blockquote>`;
+}
+function tweetStack(p) {
+  const tweets = tweetsOf(p);
+  if (!tweets.length) return '';
+  return `<div class="tweet-stack ${tweets.length > 1 ? 'is-thread' : ''}">${tweets.length > 1 ? `<div class="tw-thread-label">🧵 THREAD · ${tweets.length} POSTS</div>` : ''}${tweets.map(tweetCard).join('')}</div>`;
+}
 function postCard(p, prefix = '') {
-  const a = authorOf(p), v = voteInfo(p), pending = p.status === 'pending', mine = liked(p), url = p.x_url ? safeURL(p.x_url) : '', id = esc(p.id);
+  const a = authorOf(p), g = postGang(p), v = voteInfo(p), pending = p.status === 'pending', mine = liked(p), id = esc(p.id);
+  const url = p.x_url && !String(p.id).startsWith('demo-') ? safeURL(p.x_url) : '';
   const title = titleFor(lifetimePoints(p.user_id), a.title);
-  return `<article class="post-card case-card ${a.gang === 'balaks' ? 'case-balak' : 'case-batak'}" id="${prefix}post-${id}"><div class="post-top"><a class="post-author" href="#/u/${esc(a.handle)}">${cssAvatar(a, 'post-avatar')}<div><strong>@${esc(a.handle || 'anonymous')}</strong><div class="post-subline"><span class="tiny-gang ${a.gang === 'balaks' ? 'red-gang' : 'blue-gang'}">${a.gang === 'balaks' ? '🔴 BALAK' : '🔵 BATAK'}</span><span class="tiny-title">${esc(title)}</span><span>· ${relTime(p.created_at)}</span></div></div></a><div class="post-stamps"><span class="case-label">${pending ? '⏳ Under review' : url ? '𝕏 Timeline' : 'Kalesh file'}</span></div></div><h3>${esc(p.title)}</h3><p class="post-description">${esc(p.description || '')}</p>${xStatusId(url) ? `<button type="button" class="x-preview-button" data-action="x-media" data-id="${id}">𝕏 Preview original post &amp; media</button>` : ''}${posterMedia(p)}${url ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer nofollow" class="x-source">𝕏 VIEW ORIGINAL POST <span>↗</span></a>` : `<div class="fiction-tag">${p.id.startsWith('demo-') ? '🎭 FICTIONAL DEMO POST' : '🖼 ORIGINAL MEME POST'}</div>`}${xBadge(a) ? `<div class="post-xline">${xBadge(a)}</div>` : ''}<div class="post-tags">${postTopics(p).filter(t => /^[\p{L}\p{N}_-]{1,24}$/u.test(t)).slice(0, 5).map(t => `<a class="topic-chip" href="#/topic/${esc(t)}">#${esc(t)}</a>`).join('')}</div><div class="post-actions"><button type="button" data-action="toggle-spice" data-id="${id}" aria-controls="${prefix}spice-${id}" class="spice-button" ${pending || !me() ? 'disabled' : ''} aria-expanded="false"><span>🌶️</span> ${v.mine ? `Your rating: ${v.mine}/10` : 'Rate this'} <small>${v.count ? `${v.avg.toFixed(1)} avg · ${v.count}` : 'No ratings yet'}</small><span class="vote-chevron">▾</span></button><button type="button" class="action-pill ${mine ? 'is-liked' : ''}" data-action="like" data-id="${id}" ${pending || !me() ? 'disabled' : ''} aria-pressed="${mine}">🔥 ${short(likeCount(p))}</button><button type="button" class="action-pill" data-action="share" data-id="${id}" title="Share kalesh">↗ SHARE</button><button type="button" class="action-pill action-report" data-action="report" data-id="${id}" ${!me() ? 'disabled' : ''} aria-label="Report this post" title="Report this post">⚑</button></div><div class="spice-options" id="${prefix}spice-${id}" hidden><div class="spice-options-title">KITNA MASALEDAR? ${v.mine ? `<small>Your vote: ${v.mine}</small>` : ''}</div><div class="spice-grid">${Array.from({ length: 10 }, (_, i) => `<button type="button" data-action="vote" data-id="${id}" data-value="${i + 1}" aria-label="Rate ${i + 1} out of 10" class="${v.mine === i + 1 ? 'voted' : ''}">${i + 1}</button>`).join('')}</div><small>Rate the absurdity, not harassment. One vote per account.</small></div></article>`;
+  const lead = tweetsOf(p)[0];
+  const media = lead ? tweetStack(p) + (safeImg(p.image_url) ? posterMedia(p) : '') : posterMedia(p);
+  // Desk descriptions are "note + tweet text"; the snapshot already shows the text, so don't repeat it.
+  const desc = lead?.text && (p.description || '').includes(lead.text) ? p.description.replace(lead.text, '').trim() : (p.description || '');
+  return `<article class="post-card case-card ${g === 'balaks' ? 'case-balak' : 'case-batak'} ${isDeskPost(p) ? 'desk-post' : ''}" id="${prefix}post-${id}"><div class="post-top"><a class="post-author" href="#/u/${esc(a.handle)}">${cssAvatar(a, 'post-avatar')}<div><strong>@${esc(a.handle || 'anonymous')}</strong><div class="post-subline"><span class="tiny-gang ${g === 'balaks' ? 'red-gang' : 'blue-gang'}">${g === 'balaks' ? '🔴 BALAK' : '🔵 BATAK'}</span><span class="tiny-title">${esc(title)}</span><span>· ${relTime(p.created_at)}</span></div></div></a><div class="post-stamps"><span class="case-label">${pending ? '⏳ Under review' : isDeskPost(p) ? '📡 KALESH DESK' : url ? '𝕏 Timeline' : 'Kalesh file'}</span></div></div><h3>${esc(p.title)}</h3>${desc ? `<p class="post-description">${esc(desc)}</p>` : ''}${xStatusId(url) ? `<button type="button" class="x-preview-button" data-action="x-media" data-id="${id}">𝕏 Preview original post &amp; media</button>` : ''}${media}${url ?`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer nofollow" class="x-source">𝕏 VIEW ORIGINAL POST <span>↗</span></a>` : `<div class="fiction-tag">${p.id.startsWith('demo-') ? '🎭 FICTIONAL DEMO POST' : '🖼 ORIGINAL MEME POST'}</div>`}${xBadge(a) ? `<div class="post-xline">${xBadge(a)}</div>` : ''}<div class="post-tags">${postTopics(p).filter(t => /^[\p{L}\p{N}_-]{1,24}$/u.test(t)).slice(0, 5).map(t => `<a class="topic-chip" href="#/topic/${esc(t)}">#${esc(t)}</a>`).join('')}</div><div class="post-actions"><button type="button" data-action="toggle-spice" data-id="${id}" aria-controls="${prefix}spice-${id}" class="spice-button" ${pending || !me() ? 'disabled' : ''} aria-expanded="false"><span>🌶️</span> ${v.mine ? `Your rating: ${v.mine}/10` : 'Rate this'} <small>${v.count ? `${v.avg.toFixed(1)} avg · ${v.count}` : 'No ratings yet'}</small><span class="vote-chevron">▾</span></button><button type="button" class="action-pill ${mine ? 'is-liked' : ''}" data-action="like" data-id="${id}" ${pending || !me() ? 'disabled' : ''} aria-pressed="${mine}">🔥 ${short(likeCount(p))}</button><button type="button" class="action-pill" data-action="share" data-id="${id}" title="Share kalesh">↗ SHARE</button><button type="button" class="action-pill action-report" data-action="report" data-id="${id}" ${!me() ? 'disabled' : ''} aria-label="Report this post" title="Report this post">⚑</button></div><div class="spice-options" id="${prefix}spice-${id}" hidden><div class="spice-options-title">KITNA MASALEDAR? ${v.mine ? `<small>Your vote: ${v.mine}</small>` : ''}</div><div class="spice-grid">${Array.from({ length: 10 }, (_, i) => `<button type="button" data-action="vote" data-id="${id}" data-value="${i + 1}" aria-label="Rate ${i + 1} out of 10" class="${v.mine === i + 1 ? 'voted' : ''}">${i + 1}</button>`).join('')}</div><small>Rate the absurdity, not harassment. One vote per account.</small></div></article>`;
 }
 function highlights() {
   const p = controversyOfDay(), m = dailyMeme();
@@ -355,7 +419,7 @@ function sortedPosts() {
   const topic = topicOf();
   if (topic) list = list.filter(p => postTopics(p).includes(topic));
   if (q) list = list.filter(p => { const a = authorOf(p); const hay = [p.title, p.description, a.handle, a.x_username, a.x_claimed, ...(p.tags || [])].join(' ').toLowerCase(); return hay.includes(q) || words.every(w => hay.includes(w)); });
-  if (S.sort === 'balaks' || S.sort === 'bataks') list = list.filter(p => authorOf(p).gang === S.sort);
+  if (S.sort === 'balaks' || S.sort === 'bataks') list = list.filter(p => postGang(p) === S.sort);
   const rel = p => { let s = 0; for (const w of words) { if (p.title.toLowerCase().includes(w)) s += 5; if (p.description.toLowerCase().includes(w)) s += 2; if ((p.tags || []).some(t => t.includes(w))) s += 3; } return s + voteInfo(p).avg * 0.1; };
   const by = { oldest: (a, b) => new Date(a.created_at) - new Date(b.created_at), az: (a, b) => a.title.localeCompare(b.title), za: (a, b) => b.title.localeCompare(a.title), spicy: (a, b) => voteInfo(b).avg - voteInfo(a).avg, trending: (a, b) => trendScore(b) - trendScore(a), relevant: (a, b) => rel(b) - rel(a) };
   return list.sort(by[S.sort] || ((a, b) => new Date(b.created_at) - new Date(a.created_at)));
@@ -373,7 +437,7 @@ function feedHTML() {
   const selectedGang = ['balaks', 'bataks'].includes(S.sort) ? S.sort : null;
   const gangs = activeGang ? [activeGang] : selectedGang ? [selectedGang] : ['balaks', 'bataks'];
   const posts = sortedPosts();
-  return `<div class="gang-feed ${gangs.length === 1 ? 'one-gang' : ''}">${gangs.map(gang => `<section>${gangSpotlight(gang)}<div class="feed-list">${posts.filter(p => authorOf(p).gang === gang).map(p => postCard(p)).join('') || `<p class="empty">${esc(C.fourthWall.empty[(topicOf().length + Number(gang === 'bataks')) % C.fourthWall.empty.length])}</p>`}</div></section>`).join('')}</div>`;
+  return `<div class="gang-feed ${gangs.length === 1 ? 'one-gang' : ''}">${gangs.map(gang => `<section>${gangSpotlight(gang)}<div class="feed-list">${posts.filter(p => postGang(p) === gang).map(p => postCard(p)).join('') || `<p class="empty">${esc(C.fourthWall.empty[(topicOf().length + Number(gang === 'bataks')) % C.fourthWall.empty.length])}</p>`}</div></section>`).join('')}</div>`;
 }
 function home() {
   const topic = topicOf();
@@ -683,7 +747,7 @@ function catCouncil() {
 /* ───────────────────────── modals (v1 dialogs) ───────────────────────── */
 const dialog = (label, title, body, cls = '') => `<div class="modal-backdrop" data-action="backdrop"><div class="dialog ${cls}" role="dialog" aria-modal="true" aria-label="${esc(label)}"><div class="dialog-bar"><span>${title}</span><button type="button" data-action="close" aria-label="Close">✕</button></div>${body}</div></div>`;
 function postModal() {
-  return dialog('Post a controversy', '🎬 POST KALESH', `<form id="post-form" class="dialog-body"><h2>Drop the kalesh.</h2><label>YOUR POST<textarea name="text" required minlength="10" maxlength="700" rows="3" placeholder="What happened?"></textarea></label><label>PUBLIC X LINK<input name="x_url" type="url" placeholder="https://x.com/user/status/123" /></label><details><summary>Add topics or a meme image</summary><label>Tags <input name="tags" maxlength="140" placeholder="bangalore, food, cinema"></label><label class="upload-label">PNG, JPEG, WEBP or GIF · max 3 MB<input name="meme" type="file" accept="image/png,image/jpeg,image/webp,image/gif" /></label></details><p class="post-guideline">Add an X link or an original image. No doxxing, threats or pile-ons.${S.mode === 'live' ? ' Posts are reviewed before publication.' : ''}</p><button type="submit" id="submit-post" class="button button-red button-wide submit-post">Post kalesh</button></form>`, 'post-dialog');
+  return dialog('Post a controversy', '🎬 POST KALESH', `<form id="post-form" class="dialog-body"><h2>Drop the kalesh.</h2><label>YOUR POST<textarea name="text" maxlength="700" rows="3" placeholder="What happened? (optional if you paste an X link)"></textarea></label><label>PUBLIC X LINK<input name="x_url" type="url" placeholder="https://x.com/user/status/123" /></label><details><summary>Add topics or a meme image</summary><label>Tags <input name="tags" maxlength="140" placeholder="bangalore, food, cinema"></label><label class="upload-label">PNG, JPEG, WEBP or GIF · max 3 MB<input name="meme" type="file" accept="image/png,image/jpeg,image/webp,image/gif" /></label></details><p class="post-guideline">Text-only is fine. X links get a saved snapshot of the post. No doxxing, threats or pile-ons.${S.mode === 'live' ? ' Posts are reviewed before publication.' : ''}</p><button type="submit" id="submit-post" class="button button-red button-wide submit-post">Post kalesh</button></form>`, 'post-dialog');
 }
 function avatarModal() {
   const u = me();
@@ -817,7 +881,7 @@ async function refreshLive() {
   if (!S.sb || !S.session) return;
   const userId = S.session.user.id;
   const [p, v, l] = await Promise.all([
-    S.sb.from('controversies').select('*,author:profiles!controversies_user_id_fkey(id,handle,x_username,x_claimed,avatar_emoji,avatar_url,gang,title)').order('created_at', { ascending: false }).limit(300),
+    postQuery(q => q.order('created_at', { ascending: false }).limit(300)),
     S.sb.from('spice_votes').select('post_id,user_id,spice').limit(5000),
     S.sb.from('post_likes').select('post_id,user_id').limit(5000)
   ]);
@@ -825,7 +889,68 @@ async function refreshLive() {
   if (p.error || v.error || l.error) { liveError(p.error || v.error || l.error); return; }
   S.posts = p.data.map(x => ({ ...x, author: x.author || { handle: 'deleted', avatar_emoji: '👻' } }));
   S.votes = v.data; S.likes = l.data; bump();
+  startRealtime();
 }
+/* Posts + author + tweet snapshots (migration 002). Falls back to the plain select if post_tweets isn't deployed yet. */
+const POST_AUTHOR = 'author:profiles!controversies_user_id_fkey(id,handle,x_username,x_claimed,avatar_emoji,avatar_url,gang,title)';
+const POST_TWEETS = 'tweets:post_tweets(position,tweet_id,url,author_handle,author_name,author_avatar,text,media,metrics,tweeted_at,snapshot_source)';
+let tweetsTable = true;
+async function postQuery(build) {
+  if (tweetsTable) {
+    const res = await build(S.sb.from('controversies').select(`*,${POST_AUTHOR},${POST_TWEETS}`));
+    if (!res.error || !/post_tweets|relationship/i.test(res.error.message || '')) return res;
+    tweetsTable = false; console.warn('post_tweets not available; run supabase/migrations/002_content_pipeline.sql');
+  }
+  return build(S.sb.from('controversies').select(`*,${POST_AUTHOR}`));
+}
+/* New published posts (desk, apify, approved users) arrive without a refresh and get the BREAKING slam. */
+let feedChannel = null;
+function startRealtime() {
+  if (feedChannel || !S.sb || S.mode !== 'live') return;
+  const onChange = payload => {
+    const row = payload.new;
+    if (!row?.id || row.status !== 'published') return;
+    const known = S.posts.find(p => p.id === row.id);
+    if (known?.status === 'published') return;
+    // Short delay so the pipeline's tweet snapshots (inserted before the publish flip) are readable.
+    setTimeout(async () => {
+      const { data, error } = await postQuery(q => q.eq('id', row.id).maybeSingle());
+      if (error || !data || S.mode !== 'live') return;
+      deliverPost({ ...data, author: data.author || { handle: 'deleted', avatar_emoji: '👻' } });
+    }, 400);
+  };
+  feedChannel = S.sb.channel('kalesh-feed')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'controversies', filter: 'status=eq.published' }, onChange)
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'controversies', filter: 'status=eq.published' }, onChange)
+    .subscribe();
+}
+/* Shared by live Realtime and the demo wire: add a post to the feed, re-render in place, slam BREAKING NEWS. */
+function deliverPost(post) {
+  const list = S.mode === 'demo' ? store.posts : S.posts;
+  const i = list.findIndex(p => p.id === post.id);
+  if (i >= 0) list.splice(i, 1);
+  list.unshift(post);
+  if (S.mode === 'demo') saveStore(); else bump();
+  if (!me()?.gang) return;
+  renderFeed();
+  const reel = $('#trending-reel'); if (reel) reel.innerHTML = memeStrip(true);
+  if (post.user_id === me().id) return;
+  Chaos.breaking((isDeskPost(post) ? '📡 KALESH DESK: ' : '') + post.title, false, matchedMeme(post), true);
+  notice('📡 Naya kalesh aaya: ' + post.title.slice(0, 80));
+}
+/* Demo stand-in for Realtime: drop the next DEMO_WIRE post while the feed is open (once per browser). */
+function demoWireTick() {
+  if (S.mode !== 'demo' || document.hidden || $('#overlays').firstChild || !$('#feed')) return;
+  store.wire ||= [];
+  const next = DEMO_WIRE.map(make => make()).find(p => !store.wire.includes(p.id));
+  if (!next) return;
+  store.wire.push(next.id);
+  next.created_at = new Date().toISOString();
+  next.tweets.forEach(t => { t.tweeted_at = next.created_at; });
+  deliverPost(next);
+}
+setTimeout(() => { demoWireTick(); setInterval(demoWireTick, 75000); }, 25000);
+window.KALESH_DEMO_WIRE = demoWireTick;
 let refreshingNews = false;
 setInterval(async () => {
   if (refreshingNews || S.mode !== 'live' || route() !== '/news' || document.hidden || $('#overlays').firstChild) return;
@@ -892,30 +1017,48 @@ async function chooseGang(g) {
   SFX.play(g === 'balaks' ? 'roar' : 'quack');
   go('/'); render();
 }
+// Snapshot an X link through the `unfurl` Edge Function (live) or a local stub (demo, offline).
+async function unfurlLink(x_url, post_id) {
+  if (S.mode !== 'live') {
+    const [, handle, tweet_id] = new URL(x_url).pathname.match(/^\/([A-Za-z0-9_]{1,15})\/status\/(\d{1,25})/) || [];
+    return tweet_id ? [{ tweet_id, url: x_url, author_handle: handle === 'i' ? '' : handle, author_name: '', text: '', media: [], metrics: {}, tweeted_at: null, snapshot_source: 'stub' }] : [];
+  }
+  const { data, error } = await S.sb.functions.invoke('unfurl', { body: post_id ? { urls: [x_url], post_id } : { urls: [x_url] } });
+  if (error) throw error;
+  return Array.isArray(data?.tweets) ? data.tweets : [];
+}
 async function submitPost(form) {
   const fd = new FormData(form);
-  const description = String(fd.get('text') || '').trim();
-  const title = [...description.replace(/\s+/g, ' ')].slice(0, 150).join('').trim();
+  let description = String(fd.get('text') || '').trim();
   const x_url = String(fd.get('x_url') || '').trim();
   const tags = String(fd.get('tags') || '').split(',').map(t => t.trim().toLowerCase().replace(/[^\p{L}\p{N}_-]/gu, '').slice(0, 24)).filter(Boolean).slice(0, 5);
   const file = fd.get('meme')?.size ? fd.get('meme') : null;
   const poster_text = String(fd.get('poster_text') || '').trim().slice(0, 40) || pick(['ABSOLUTE CINEMA', 'KHAO POPCORN', 'BRO IS COOKED', 'PICTURE ABHI BAAKI HAI', '+999 AURA']);
   const poster_emoji = String(fd.get('poster_emoji') || '🎬').slice(0, 8);
-  if ([...description].length < 10 || title.length < 8) return notice('Write at least 10 characters about what happened.');
   if (x_url && !isXURL(x_url)) return notice('Link x.com/…/status/… wala hona chahiye.');
-  if (!x_url && !file) return notice('X link ya original meme image — kuch toh do.');
+  // Text-only posts are fine. With an X link the text is optional (live mode borrows the tweet's text).
+  if (description ? [...description].length < 10 : !(x_url && S.mode === 'live')) return notice(x_url ? 'Demo mode X fetch nahi karta. Ek line likh do (10+ characters).' : 'Write at least 10 characters about what happened.');
   const norm = u => u.toLowerCase().replace('twitter.com', 'x.com').replace('www.', '').replace('mobile.', '').split('?')[0];
   if (x_url && allPosts().some(p => p.x_url && norm(p.x_url) === norm(x_url))) return notice('Duplicate kalesh! Ye pehle hi post ho chuka hai.');
   const btn = $('#submit-post'); btn.disabled = true; btn.textContent = 'UPLOADING KAND…';
   SFX.upload();
+  let title = '';
   try {
+    let tweets = [];
+    if (x_url && (S.mode !== 'live' || !description)) tweets = await unfurlLink(x_url);
+    if (!description) description = [...String(tweets[0]?.text || '').trim()].slice(0, 700).join('');
+    if ([...description].length < 10) throw new Error('Tweet ka text nahi mila. Ek line khud likh do.');
+    title = [...description.replace(/\s+/g, ' ')].slice(0, 150).join('').trim();
+    if (title.length < 8) throw new Error('Write at least 10 characters about what happened.');
     const image_url = await uploadImage(file, 'kalesh');
     if (S.mode === 'demo') {
-      store.posts.unshift({ id: makeId(), user_id: me().id, title, description, x_url: x_url || null, tags, image_url: image_url || null, poster_text, poster_emoji, created_at: new Date().toISOString(), status: 'published', seed: { spice: 0, count: 0, likes: 0 } });
+      store.posts.unshift({ id: makeId(), user_id: me().id, title, description, x_url: x_url || null, tags, tweets, image_url: image_url || null, poster_text, poster_emoji, created_at: new Date().toISOString(), status: 'published', seed: { spice: 0, count: 0, likes: 0 } });
       saveStore();
     } else {
-      const { error } = await S.sb.from('controversies').insert({ user_id: S.session.user.id, title, description, x_url: x_url || null, tags, image_url: image_url || null, poster_text, poster_emoji });
+      const { data: row, error } = await S.sb.from('controversies').insert({ user_id: S.session.user.id, title, description, x_url: x_url || null, tags, image_url: image_url || null, poster_text, poster_emoji }).select('id').single();
       if (error) throw error;
+      // Save the tweet snapshot server-side (users can't write post_tweets). Not fatal: the link still works.
+      if (x_url) await unfurlLink(x_url, row.id).catch(e => console.warn('unfurl failed', e));
       await refreshLive();
     }
     closeOverlay(); go('/'); render();
@@ -1001,7 +1144,7 @@ async function openPost(id) {
   if (!post && S.mode === 'guest' && !configured) post = DEMO_POSTS.find(p => p.id === id);
   if (!post && S.sb && /^[a-f\d-]{36}$/i.test(id)) {
     const here = route();
-    const { data } = await S.sb.from('controversies').select('*,author:profiles!controversies_user_id_fkey(id,handle,x_username,x_claimed,avatar_emoji,avatar_url,gang,title)').eq('id', id).eq('status','published').maybeSingle();
+    const { data } = await postQuery(q => q.eq('id', id).eq('status','published').maybeSingle());
     if (route() !== here) return;
     post = data;
   }
