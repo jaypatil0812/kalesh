@@ -24,6 +24,8 @@ Open http://localhost:4173. With `config.js` empty you get **demo mode** (everyt
 
 All the jokes live in `js/memes.js`. Edit that file to refresh memes, news lines, debate dialogue, loading lines and titles.
 
+The poster redesign uses a curated set from the supplied meme CSV. The media list, CSV IDs and sources are in `js/meme-media.js`. The local GIFs have static alternatives for reduced-motion visitors. The intermission can be replayed from the entrance, and the sound switch controls all effects.
+
 ## Go live (Supabase: email + X login)
 
 1. Create a Supabase project. In the SQL editor, run `supabase-schema.sql` once (written for a **fresh** project).

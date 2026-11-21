@@ -1,9 +1,25 @@
 /* KALESH.EXE — SFX.EXE
    Every sound is synthesized live with WebAudio. No copyrighted clips, no files to load.
-   Sound is OFF by default. Explicit "play this sound" buttons (siren etc.) play anyway. */
+   Sound is OFF by default. All effects respect the sound switch. */
 (function () {
   let ctx = null, out = null;
   let enabled = false;
+  let uploadClip;
+  let broadcastClip;
+  let clipTimer;
+  function stopClip() {
+    clearTimeout(clipTimer);
+    broadcastClip?.pause();
+  }
+  function playClip(url, seconds) {
+    if (!enabled) return;
+    uploadClip?.pause();
+    stopClip();
+    broadcastClip = new Audio(url);
+    broadcastClip.volume = 0.5;
+    broadcastClip.play().catch(() => {});
+    if (seconds) clipTimer = setTimeout(stopClip, seconds * 1000);
+  }
   try { enabled = localStorage.getItem('kalesh-sound') === 'on'; } catch {}
 
   function ac() {
@@ -16,7 +32,7 @@
       out.gain.value = 0.55;
       out.connect(comp).connect(ctx.destination);
     }
-    if (ctx.state === 'suspended') ctx.resume();
+    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
     return ctx;
   }
 
@@ -90,14 +106,26 @@
     get enabled() { return enabled; },
     toggle() {
       enabled = !enabled;
+      if (out) out.gain.value = enabled ? 0.55 : 0;
+      if (!enabled) uploadClip?.pause();
+      if (!enabled) stopClip();
       try { localStorage.setItem('kalesh-sound', enabled ? 'on' : 'off'); } catch {}
       if (enabled) SOUNDS.coin();
       return enabled;
     },
     /** plays only if the user turned sound on */
     play(name) { if (enabled && SOUNDS[name]) try { SOUNDS[name](); } catch {} },
-    /** user explicitly asked for this sound (e.g. pressed the siren) */
-    force(name) { if (SOUNDS[name]) try { SOUNDS[name](); } catch {} },
+    clip: playClip,
+    stopClip,
+    upload() {
+      if (!enabled) return;
+      stopClip();
+      uploadClip ||= new Audio('assets/sounds/huss-recreation.mp3');
+      uploadClip.currentTime = 0;
+      uploadClip.volume = 0.7;
+      uploadClip.play().catch(() => window.SFX.play('coin'));
+    },
+    force(name) { window.SFX.play(name); },
     names: Object.keys(SOUNDS).filter(n => n !== 'hit')
   };
 })();

@@ -2,6 +2,37 @@
    Everything humorous lives here so the jokes can be refreshed without touching app logic.
    In live mode, rows from the Supabase `memes` and `news_flashes` tables are merged on top. */
 window.KALESH_CONTENT = {
+  fourthWall: {
+    siren: [
+      'Mummy ko pata hai tu kya kar raha hai?',
+      'Exclusive: “Bas ek minute” ka 24va minute chal raha hai.',
+      'Aapne khud siren dabaya. Ab shor ki complaint kis se karoge?',
+      'Screen time ne statement dene se mana kar diya hai.',
+      'Desh baad mein jaanega. Pehle batao, assignment submit kiya?',
+      'Neighbourhood sources confirm: chai thandi ho chuki hai.',
+      'Agle break ke baad bhi yahi chalega. Humne aur kuch banaya hi nahi.',
+      'Mummy live on line one: Wi-Fi ka bill bharne wala kaun hai?',
+      'Breaking: Incognito mode ne mummy se immunity maangi. Arzi kharij.',
+      'Aap dekh rahe hain Kalesh Tak. Aapko kaam bhi tha, allegedly.'
+    ],
+    scroll: [
+      'Mummy ko pata hai tu kya kar raha hai?',
+      'Bhai, scroll karte karte thumb ka internship lag gaya.',
+      'You said “last post” three posts ago. Sootron ke hawale se.',
+      'Phone ko charge pe laga diya. Apne plans ka kya?'
+    ],
+    empty: [
+      'Yahan koi kalesh nahi. Screenshots lene ki zaroorat nahi.',
+      'The group chat has read this topic and chosen silence.',
+      'Zero posts. Ek baar toh internet ne bola: rehne de.'
+    ],
+    ticket: [
+      'Your mystery prize is one (1) minute of plausible productivity.',
+      'Interval mein samosa khatam. But the group chat is still open.',
+      'You found the director’s cut. It’s just you finishing the work you opened this tab to avoid.',
+      'Audience feedback: aapko film se zyada comment section pasand aaya.'
+    ]
+  },
   // [emoji, title, caption, sound]
   memes: [
     ['🐈', 'BILLI IT DEPARTMENT', 'Server pe billi baithi hai. Management se baat mat karna.', 'pop'],
@@ -72,6 +103,8 @@ window.KALESH_CONTENT = {
     'Brain cells dhoondh rahe hain: 0 found',
     'Kalesh ka prasad tayyar ho raha hai...',
     'Mummy se chhupa ke load ho raha hai...',
+    '“Bas ek minute” ka loading bar phir se atak gaya.',
+    'Papa ne poocha kaunsi website hai. Alt-Tab ready rakho.',
     'GTA 6 se pehle load ho jayega. Promise.',
     'Aura recharge ho raha hai...'
   ],

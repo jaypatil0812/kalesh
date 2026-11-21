@@ -30,9 +30,10 @@
 
   /** a retro popup window with a random meme, closable, never more than one */
   function popup(meme) {
-    if (!chaosOn && !meme) return;
+    if ((!chaosOn && !meme) || document.querySelector('.modal-backdrop, dialog[open]')) return;
     document.querySelector('.chaos-popup')?.remove();
     const m = meme || pick(window.KALESH_MEMES?.() || C.memes);
+    const image = window.KALESH_MEME_IMAGE?.(m);
     const w = document.createElement('div');
     w.className = 'chaos-popup';
     w.setAttribute('role', 'status');
@@ -40,7 +41,7 @@
     const top = 90 + Math.random() * Math.max(10, window.innerHeight - 330);
     w.style.left = left + 'px'; w.style.top = top + 'px';
     w.innerHTML = `<div class="win-bar"><span>${esc(m[0])} MEME_${Math.floor(Math.random() * 900 + 100)}.EXE</span><button type="button" aria-label="Close meme popup">✕</button></div>
-      <div class="win-body">${m[4] ? `<img src="${esc(m[4])}" alt="">` : `<div class="win-emoji">${esc(m[0])}</div>`}<b>${esc(m[1])}</b><p>${esc(m[2])}</p></div>`;
+      <div class="win-body">${image ? `<img src="${esc(image)}" alt="">` : `<div class="win-emoji">${esc(m[0])}</div>`}<b>${esc(m[1])}</b><p>${esc(m[2])}</p></div>`;
     w.querySelector('button').onclick = () => w.remove();
     document.body.append(w);
     window.SFX?.play(m[3] || 'pop');
@@ -49,17 +50,18 @@
   }
 
   /** full-width Indian-news-channel BREAKING NEWS slam */
-  function breaking(headline, withSiren) {
-    if (withSiren) window.SFX?.force('siren'); else window.SFX?.play('hit');
-    if (reduced()) { window.KALESH_TOAST?.('🚨 BREAKING: ' + headline); return; }
+  function breaking(headline, withSiren, meme, playSound = true, aside = '') {
+    if (playSound) window.SFX?.play(withSiren ? 'siren' : 'hit');
     document.querySelector('.breaking-flash')?.remove();
     const b = document.createElement('div');
     b.className = 'breaking-flash';
+    const image = meme && window.KALESH_MEME_IMAGE?.(meme);
     b.innerHTML = `<div class="bf-band bf-red">BREAKING NEWS · BREAKING NEWS · BREAKING NEWS · BREAKING NEWS · BREAKING NEWS ·</div>
-      <div class="bf-center"><span class="bf-label">🚨 BREAKING 🚨</span><strong>${esc(headline)}</strong><em>KALESH TAK · SABSE TEZ · SABSE FALTU</em></div>
-      <div class="bf-band bf-yellow">SABSE PEHLE · SABSE TEZ · SABSE FALTU · SABSE PEHLE · SABSE TEZ · SABSE FALTU ·</div>`;
+      <button type="button" class="bf-center" aria-label="Dismiss breaking news"><span class="bf-label">🚨 BREAKING</span>${image ? `<img src="${esc(image)}" alt="">` : ''}<strong>${esc(headline)}</strong><em>Click to dismiss</em></button>
+      <div class="bf-band bf-yellow">${esc(aside || 'SABSE PEHLE · SABSE TEZ · SABSE FALTU')}</div>`;
     document.body.append(b);
-    setTimeout(() => b.remove(), 2600);
+    b.querySelector('button').onclick = () => b.remove();
+    setTimeout(() => b.remove(), 11000);
   }
 
   /** emoji rain */
@@ -100,7 +102,7 @@
     popupTimer = setTimeout(() => {
       if (chaosOn && !document.hidden && document.querySelector('.main-shell') && !document.querySelector('.modal-backdrop')) popup();
       schedulePopups();
-    }, 45000 + Math.random() * 40000);
+    }, 80000 + Math.random() * 55000);
   }
 
   // Random click stickers on non-interactive spots (1 in 3 clicks so it stays a surprise)
@@ -128,10 +130,12 @@
   });
 
   // Doom-scroll detector
-  let scrolled = 0, warned = false;
+  let warned = false;
   addEventListener('scroll', () => {
-    scrolled++;
-    if (!warned && scrolled > 900) { warned = true; window.KALESH_TOAST?.('🧃 Mummy ko pata hai tu kya kar raha hai?'); window.SFX?.play('siren'); }
+    if (!warned && chaosOn && scrollY > Math.max(1400, innerHeight * 2) && document.querySelector('.gang-feed')) {
+      warned = true;
+      window.KALESH_TOAST?.('🧃 ' + pick(C.fourthWall.scroll));
+    }
   }, { passive: true });
 
   window.Chaos = {
