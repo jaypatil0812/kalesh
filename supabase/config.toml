@@ -1,0 +1,13 @@
+# Supabase CLI settings for KALESH.EXE Edge Functions (other settings use CLI defaults).
+# These functions check their own secret header / user token, so the gateway JWT check is off.
+# (Equivalent to `supabase functions deploy <name> --no-verify-jwt`.)
+project_id = "kalesh-exe"
+
+[functions.unfurl]
+verify_jwt = false
+
+[functions.ingest]
+verify_jwt = false
+
+[functions.apify-sync]
+verify_jwt = false
