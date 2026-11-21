@@ -715,6 +715,38 @@ function claimPage() {
     <div class="ne-blink blink">PRESS START</div>
   </section></div>`;
 }
+// Accounts made for someone by the admin (create-accounts function) start with a temp password.
+const mustChangePassword = () => S.mode === 'live' && !!S.session?.user?.user_metadata?.must_change_password;
+function newPasswordPage() {
+  const u = me();
+  return `<div class="center-page arcade-bg"><section class="name-entry">
+    <div class="ne-top">WELCOME, @${esc(u.handle || '')}!</div>
+    <h1>APNA PASSWORD BANAO</h1>
+    <p>Ye account aapke liye pehle se bana tha. Andar jaane se pehle naya password set karo, jo sirf aapko pata ho.</p>
+    <form id="newpass-form" autocomplete="on">
+      <input type="text" name="username" value="${esc(u.handle || '')}" autocomplete="username" hidden>
+      <label class="ne-xlabel">NAYA PASSWORD <small>(8+ characters)</small><input name="password" type="password" required minlength="8" maxlength="72" autocomplete="new-password" autofocus></label>
+      <label class="ne-xlabel">PHIR SE<input name="password2" type="password" required minlength="8" maxlength="72" autocomplete="new-password"></label>
+      <div id="newpass-status" class="ne-status" role="status"></div>
+      <button type="submit" class="btn btn-hot btn-wide btn-big">▶ SET KARO</button>
+    </form>
+  </section></div>`;
+}
+async function setFirstPassword(f) {
+  const fd = new FormData(f), pw = String(fd.get('password') || ''), pw2 = String(fd.get('password2') || '');
+  const st = $('#newpass-status'), btn = $('button[type=submit]', f);
+  const fail = m => { st.textContent = '❌ ' + m; st.className = 'ne-status bad'; SFX.play('error'); };
+  if (pw.length < 8 || pw.length > 72) return fail('Password 8–72 characters ka ho.');
+  if (pw !== pw2) return fail('Dono password match nahi kar rahe.');
+  btn.disabled = true;
+  try {
+    const { data, error } = await S.sb.auth.updateUser({ password: pw, data: { must_change_password: false } });
+    if (error) throw error;
+    if (data?.user && S.session) S.session = { ...S.session, user: data.user };
+    SFX.play('coin'); notice('🔑 Password set. Swagat hai!'); render();
+  } catch (e) { fail(friendlyAuthError(e)); }
+  finally { btn.disabled = false; }
+}
 function gangPage() { return `<div class="onboard-page"><div class="onboard-top">KALESH.EXE <span>CHARACTER SELECTION · LEVEL 01</span></div><h1>CHOOSE YOUR <em>PROBLEM.</em></h1><p>One choice. One gang. Lifetime of pointless arguments. Choose wisely (matlab random).</p><div class="gang-cards"><button class="gang-poster gang-poster-red" data-action="choose-gang" data-gang="balaks" type="button"><span class="gang-poster-top">PLAYER 01 · THE LOUD ONES</span><span class="gang-mascot">🦁</span><strong>BALAKS</strong><em>JOSH 100. LOGIC 0.</em><span class="gang-choose">JOIN BALAKS ↗</span></button><div class="gang-middle-vs">VS</div><button class="gang-poster gang-poster-blue" data-action="choose-gang" data-gang="bataks" type="button"><span class="gang-poster-top">PLAYER 02 · THE QUACK ONES</span><span class="gang-mascot">🦆</span><strong>BATAKS</strong><em>QUACK HARD. THINK LATER.</em><span class="gang-choose">JOIN BATAKS ↗</span></button></div><small class="gang-note">⚠ Gang selection is permanent in this build. No betrayal appeals will be entertained.</small></div>`; }
 function notFound() { return `<div class="error-page"><div class="error-system">⚠ CRITICAL INTERNET FAILURE ⚠</div><div class="explosion-stack" aria-hidden="true"><span class="boom b1">💥</span><span class="boom b2">💥</span><span class="boom b3">💥</span><span class="boom b4">💥</span></div><span class="err-number">404</span><h1>YEH PAGE TOH<br/><span>PHAT GAYA.</span></h1><p>Aap galat jagah aa gaye hain. Internet ka map bhi unemployed hai.</p><div class="error-actions"><button class="button button-red" type="button" data-action="go-home">🏠 GHAR BHEJ DO</button><button class="button button-black" type="button" data-action="explode">💥 PHIR SE PHODO</button></div><span class="error-footer">KALESH.EXE HAS STOPPED PRETENDING TO WORK</span></div>`; }
 const councilVerdicts = [
@@ -784,6 +816,7 @@ function render() {
   document.body.classList.toggle('dark', isDarkRoute(route()));
   if (needsLogin()) { app().innerHTML = loginPage(); return; }
   if (!me()) { app().innerHTML = `<div class="loading-block"><img src="assets/cat.svg" class="spin-fast" alt=""><p>${esc(pick(C.loading))}</p></div>`; return; }
+  if (mustChangePassword()) { app().innerHTML = newPasswordPage(); return; }
   if (!me().handle) { app().innerHTML = claimPage(); return; }
   if (!me().gang) { app().innerHTML = gangPage(); return; }
   const rr = route();
@@ -1176,7 +1209,12 @@ function explode() {
 }
 async function logout() {
   if (S.mode === 'demo') { try { sessionStorage.removeItem('kalesh-demo'); } catch {} S.mode = 'guest'; S.profile = null; go('/'); render(); }
-  else if (S.sb) await S.sb.auth.signOut();
+  else if (S.sb) {
+    // An expired token makes the server sign-out throw; still drop the local session so logout always works.
+    try { const { error } = await S.sb.auth.signOut(); if (error) throw error; }
+    catch (e) { console.warn('server sign-out failed, signing out locally', e); try { await S.sb.auth.signOut({ scope: 'local' }); } catch {} }
+    S.session = null; S.profile = null; S.mode = 'guest'; go('/'); render();
+  }
 }
 function enterDemo() {
   S.mode = 'demo';
@@ -1393,6 +1431,7 @@ document.addEventListener('submit', async e => {
   else if (f.id === 'claim-form') await claimHandle(f);
   else if (f.id === 'bio-form') { const fd = new FormData(f), xc = String(fd.get('x_claimed') || '').trim().replace(/^@/, ''); if (xc && !X_RE.test(xc)) return notice('X handle galat hai.'); const fields = { bio: String(fd.get('bio') || '').trim().slice(0, 160) || null }; if (!me().x_username) fields.x_claimed = xc || null; const np = String(fd.get('new_password') || ''); if (np && !(await changePassword(np))) return; await updateProfile(fields); }
   else if (f.id === 'pass-form') await passwordAuth(f);
+  else if (f.id === 'newpass-form') await setFirstPassword(f);
 });
 document.addEventListener('change', async e => {
   if (e.target.id === 'sort') { S.sort = e.target.value; renderFeed(); }

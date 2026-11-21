@@ -12,6 +12,11 @@
  * Scouts append A–G. Nothing goes live until a human sets H "approve" to yes; the next sync then
  * posts it and fills I/J. Other rows just wait.
  *
+ * Tab "accounts" (ready-made logins to hand over), header row 1:
+ *   A username | B password | C gang | D title | E bio | F x_handle | G avatar | H status | I user_id
+ * Fill A (and optionally B–G), then KALESH → Create accounts. A blank password gets a generated one,
+ * written back into B. People must set their own password on first login.
+ *
  * Setup (once):
  *   1. Extensions → Apps Script, paste this file.
  *   2. Project Settings → Script properties:
@@ -24,6 +29,8 @@
 const SHEET_NAME = 'kalesh';
 const HEADERS = ['links', 'title', 'side', 'tags', 'note', 'status', 'post_id'];
 const COL = { links: 1, title: 2, side: 3, tags: 4, note: 5, status: 6, post_id: 7 };
+const ACCOUNTS_SHEET = 'accounts';
+const ACCOUNT_HEADERS = ['username', 'password', 'gang', 'title', 'bio', 'x_handle', 'avatar', 'status', 'user_id'];
 const SCOUT_SHEET = 'scout';
 const SCOUT_HEADERS = ['links', 'title', 'side', 'tags', 'why', 'found_by', 'found_at', 'approve', 'status', 'post_id'];
 const SCOUT_COL = { links: 1, title: 2, side: 3, tags: 4, note: 5, found_by: 6, found_at: 7, approve: 8, status: 9, post_id: 10 };
@@ -34,6 +41,7 @@ function onOpen() {
   SpreadsheetApp.getUi().createMenu('KALESH')
     .addItem('Sync now', 'syncKalesh')
     .addItem('Retry errors', 'retryErrors')
+    .addItem('Create accounts', 'createAccounts')
     .addItem('Setup (headers, scout tab, 5-min trigger)', 'setup')
     .addToUi();
 }
@@ -53,6 +61,10 @@ function setup() {
   const approve = scout.getRange(2, SCOUT_COL.approve, scout.getMaxRows() - 1, 1);
   approve.setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(['yes', 'no'], true).setAllowInvalid(true).build());
   approve.setValues(approve.getValues().map(([v]) => [v === false ? '' : v]));
+  const acc = getSheet_(ACCOUNTS_SHEET);
+  acc.getRange(1, 1, 1, ACCOUNT_HEADERS.length).setValues([ACCOUNT_HEADERS]).setFontWeight('bold');
+  acc.setFrozenRows(1);
+  acc.getRange(2, 3, acc.getMaxRows() - 1, 1).setDataValidation(sideRule);
   ScriptApp.getProjectTriggers()
     .filter(t => t.getHandlerFunction() === 'syncKalesh')
     .forEach(t => ScriptApp.deleteTrigger(t));
@@ -148,6 +160,46 @@ function sendBatch_(sheet, COL, url, secret, batch) {
       : 'error: ' + String(x.error || 'unknown').slice(0, 120);
     sheet.getRange(row, COL.status, 1, 2).setValues([[label, (x && x.post_id) || '']]);
   });
+}
+
+/** KALESH → Create accounts: creates a login for every row with a username and no status. */
+function createAccounts() {
+  const props = PropertiesService.getScriptProperties();
+  const ingest = props.getProperty('INGEST_URL'), secret = props.getProperty('INGEST_SECRET');
+  if (!ingest || !secret) throw new Error('Missing INGEST_URL / INGEST_SECRET script properties');
+  const url = ingest.replace(/\/ingest\/?$/, '/create-accounts');
+  const sheet = SpreadsheetApp.getActive().getSheetByName(ACCOUNTS_SHEET);
+  if (!sheet) throw new Error('Run setup first: there is no "accounts" tab');
+  const last = sheet.getLastRow();
+  if (last < 2) return;
+  const values = sheet.getRange(2, 1, last - 1, ACCOUNT_HEADERS.length).getValues();
+  const todo = [];
+  values.forEach((r, i) => { if (String(r[0]).trim() && !String(r[7]).trim()) todo.push({ row: i + 2, r }); });
+  for (let i = 0; i < todo.length; i += 20) {
+    const batch = todo.slice(i, i + 20);
+    batch.forEach(b => sheet.getRange(b.row, 8).setValue('creating…'));
+    SpreadsheetApp.flush();
+    const accounts = batch.map(({ row, r }) => ({ ref: String(row), username: r[0], password: r[1], gang: r[2], title: r[3], bio: r[4], x_handle: r[5], avatar_emoji: r[6] }));
+    let results = [];
+    try {
+      const res = UrlFetchApp.fetch(url, { method: 'post', contentType: 'application/json', headers: { 'x-kalesh-secret': secret }, payload: JSON.stringify({ accounts }), muteHttpExceptions: true });
+      const body = JSON.parse(res.getContentText() || '{}');
+      if (res.getResponseCode() !== 200) throw new Error(body.error || ('HTTP ' + res.getResponseCode()));
+      results = body.results || [];
+    } catch (e) {
+      batch.forEach(b => sheet.getRange(b.row, 8).setValue('error: ' + String(e.message || e).slice(0, 120)));
+      continue;
+    }
+    const byRef = {};
+    results.forEach(x => { byRef[x.ref] = x; });
+    batch.forEach(({ row }) => {
+      const x = byRef[String(row)];
+      if (x && x.ok) {
+        if (x.password) sheet.getRange(row, 2).setValue(x.password);
+        sheet.getRange(row, 8, 1, 2).setValues([['created ✅', x.user_id]]);
+      } else sheet.getRange(row, 8).setValue('error: ' + String((x && x.error) || 'no result').slice(0, 120));
+    });
+  }
 }
 
 function isYes_(v) {

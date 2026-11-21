@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.apify-sync]
 verify_jwt = false
+
+[functions.create-accounts]
+verify_jwt = false

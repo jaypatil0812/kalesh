@@ -124,6 +124,17 @@ See [`integrations/google-sheet/README.md`](integrations/google-sheet/README.md)
 
 Other actors: set `APIFY_ACTOR_ID` and, if its input differs, `APIFY_INPUT_JSON` (merged into the input). The importer understands the apidojo item shape and legacy Twitter API field names.
 
+## Handed-over accounts (ready-made logins)
+
+Make accounts for people so they can get in straight away, without signing up:
+
+1. In the KALESH Desk Inbox sheet, open the **`accounts`** tab (run `setup` once after updating the script to create it).
+2. Fill **username**, plus optional **gang** (balaks/bataks), **title**, **bio**, **x_handle** (shown as unverified) and **avatar** (an emoji). Leave **password** blank to get a generated one like `zkxx-5rqg-7z4n`.
+3. **KALESH → Create accounts.** Each row gets `created ✅`, and generated passwords are written into column B.
+4. Send each person their username and password. On first login they must set their own password, and with a gang pre-set they land straight in the feed.
+
+Under the hood this calls the `create-accounts` Edge Function (same `x-kalesh-secret` as `ingest`). Temp passwords sit in the sheet, so keep the sheet private and clear column B once people have logged in.
+
 ## Security model
 
 - Users can update only `avatar_emoji`, `avatar_url`, `gang`, `bio` and `x_claimed` (column grants). `handle` goes through `claim_handle()`. `x_username` (verified) comes only from the X identity. `title` and `is_admin` are admin-only.
