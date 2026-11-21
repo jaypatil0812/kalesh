@@ -24,6 +24,13 @@ Create a sheet with a tab named **`kalesh`** and this header row (or run `setup`
 Rows are published straight away under the **KALESH DESK** profile, and open feeds get them live through Realtime.
 To pull a post down: `update public.controversies set status = 'rejected' where id = '<post_id>';`
 
+## Scout tab (AI scouts)
+
+`setup` also creates a **`scout`** tab for AI agents such as Instinct and Meta Muse:
+`links | title | side | tags | why | found_by | found_at | approve | status | post_id`.
+Scouts append rows, and a row is only posted after you set **approve** to **yes**. The `found_by` value is added as a tag.
+Briefs to give each agent are in [`../scouts/`](../scouts/README.md).
+
 ## Install
 
 1. Deploy the functions and set `KALESH_INGEST_SECRET` (see the main README, "Content pipeline").
