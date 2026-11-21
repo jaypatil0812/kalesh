@@ -70,7 +70,7 @@ const S = {
   posts: [], votes: [], likes: [],
   vaultMemes: [], vaultNews: [],
   search: '', sort: 'newest', board: 'week',
-  pendingEmail: '', bombClicks: 0, logoClicks: 0, catClicks: 0, sirenCount: 0, breakingCount: 0,
+  authTab: 'signup', authUser: '', bombClicks: 0, logoClicks: 0, catClicks: 0, sirenCount: 0, breakingCount: 0,
   combo: { n: 0, t: 0 }, publicProfile: null, panelTimer: null
 };
 
@@ -602,23 +602,31 @@ async function loadPublicProfile(handle) {
 }
 
 /* ───────────────────────── onboarding screens ───────────────────────── */
-function loginWindow() {
-  return `<section class="win98 login-window">
-    <div class="win-body">
+function authPanel() {
+  const signup = S.authTab !== 'login', live = !!S.sb;
+  return `<section class="login-panel"><div class="login-panel-inner">
       <p class="cinema-kicker">Entry pass</p>
       <h2>Enter the<br><span>kand.</span></h2>
-      <p>Pick a gang. Rate the spice. Start some kalesh.</p>
-      <button type="button" class="btn btn-ink btn-wide btn-big" data-action="login-x">𝕏 CONTINUE WITH X</button>
-      <div class="or">— YA PHIR —</div>
-      <form id="email-form" class="email-form"><label for="email-in">EMAIL SE AAO <small>(magic link, no password)</small></label><div class="email-row"><input id="email-in" name="email" type="email" required placeholder="nalla@example.com" autocomplete="email"><button type="submit" class="btn btn-hot">📧 LINK BHEJO</button></div></form>
-      <div class="or">— YA SIRF DEKHNA HAI —</div>
-      <button type="button" class="btn btn-gold btn-wide" data-action="enter-demo">🐈 DEMO MEIN GHUSO</button>
-      <p class="fine">By entering you agree to rate the absurdity, never the person. No doxxing, threats or pile-ons.</p>
-    </div>
-  </section>`;
+      <div class="auth-tabs" role="tablist" aria-label="Sign up or log in">
+        <button type="button" role="tab" aria-selected="${signup}" class="${signup ? 'on' : ''}" data-action="auth-tab" data-id="signup">Naya khiladi</button>
+        <button type="button" role="tab" aria-selected="${!signup}" class="${signup ? '' : 'on'}" data-action="auth-tab" data-id="login">Wapas aaya</button>
+      </div>
+      <form id="pass-form" class="pass-form" data-mode="${signup ? 'signup' : 'login'}" autocomplete="on" novalidate>
+        <label for="user-in">USERNAME</label>
+        <div class="pass-handle"><span>@</span><input id="user-in" name="username" required maxlength="20" autocapitalize="none" spellcheck="false" autocomplete="username" placeholder="billi_ceo" value="${esc(S.authUser || '')}"></div>
+        <label for="pass-in">PASSWORD</label>
+        <input id="pass-in" name="password" type="password" required minlength="8" maxlength="72" autocomplete="${signup ? 'new-password' : 'current-password'}" placeholder="${signup ? 'kam se kam 8 characters' : '••••••••'}">
+        ${signup ? `<label for="pass2-in">PASSWORD PHIR SE</label><input id="pass2-in" name="password2" type="password" required minlength="8" maxlength="72" autocomplete="new-password">` : ''}
+        <p id="pass-status" class="pass-status" role="status">${signup ? 'Username 3–20 chars · a-z 0-9 _ · permanent hai, soch ke rakhna' : ''}</p>
+        <button type="submit" class="button button-red button-wide">${signup ? '▶ Account banao' : '▶ Andar aao'}</button>
+      </form>
+      ${signup && live ? '<p class="login-footnote">Password bhool gaye toh recovery email nahi hai, admin se reset karwana padega. Yaad rakhna.</p>' : ''}
+      ${live ? `<div class="auth-or">ya phir</div><button type="button" class="button button-black button-wide" data-action="login-x">𝕏 Continue with X</button>` : `<p class="login-footnote">${configured ? 'Server se connect nahi hua. Demo chal raha hai.' : 'Preview mode: account sirf is browser mein banega.'}</p>`}
+      <button type="button" class="auth-demo" data-action="enter-demo">🐈 Sirf dekhna hai? Demo mein ghuso</button>
+    </div></section>`;
 }
 function loginPage() {
-  const panel = S.sb ? loginWindow() : `<section class="login-panel"><div class="login-panel-inner"><p class="cinema-kicker">Entry pass</p><h2>Enter the<br><span>kand.</span></h2><p>Pick a gang. Rate the spice. Start some kalesh.</p><p class="login-footnote">${configured ? 'Sign-in is temporarily unavailable.' : 'Email and X sign-in are unavailable in this preview.'}</p><button type="button" data-action="enter-demo" class="button button-red button-wide">Enter demo</button></div></section>`;
+  const panel = authPanel();
   return `<main class="cinema-entrance">
     <header class="cinema-bar"><a href="#/" class="cinema-wordmark">KALESH<span>.EXE</span></a><div><button type="button" data-action="intermission">▶ Intermission</button><button type="button" data-action="sound" aria-pressed="${SFX.enabled}">${soundLabel()}</button></div></header>
     <div class="cinema-grid">
@@ -627,12 +635,6 @@ function loginPage() {
     </div>
     ${memeStrip()}<footer class="cinema-prophecy">26 me to duniya khatam h</footer>
   </main>`;
-}
-function checkEmailPage() {
-  return `<div class="center-page"><section class="win98 small-win"><div class="win-bar"><span>📧 MAIL_SENT.EXE</span><span class="win-btns"><i>✕</i></span></div><div class="win-body center">
-    <div class="big-emoji">📬</div><h2>INBOX CHECK KARO.</h2><p>Magic link bheja hai <b>${esc(S.pendingEmail)}</b> pe. Usse click karo aur seedha andar.</p>
-    <p class="fine">Open the link in the same browser where you requested it. Check spam if it doesn’t arrive.</p>
-    <button type="button" class="btn btn-ink" data-action="back-login">← GALAT EMAIL? WAPAS JAO</button></div></section></div>`;
 }
 function claimPage() {
   const u = me(), suggest = cleanHandle(u.x_username || u.suggested || '').replace(/[^a-z0-9_]/g, '').slice(0, 20);
@@ -689,7 +691,7 @@ function avatarModal() {
 }
 function bioModal() {
   const u = me();
-  return dialog('Edit bio', '✍️ BIO EDITOR', `<form id="bio-form" class="dialog-body"><h2>APNE BAARE MEIN.</h2><label>BIO <small>(max 160)</small><textarea name="bio" maxlength="160" rows="3" placeholder="Professional opinion distributor.">${esc(u.bio || '')}</textarea></label>${u.x_username ? '' : `<label>X HANDLE <small>(unverified until you log in with X)</small><input name="x_claimed" maxlength="16" value="${esc(u.x_claimed || '')}" placeholder="@handle" /></label>`}<button type="submit" class="button button-red button-wide">💾 SAVE</button></form>`, 'post-dialog');
+  return dialog('Edit bio', '✍️ BIO EDITOR', `<form id="bio-form" class="dialog-body"><h2>APNE BAARE MEIN.</h2><label>BIO <small>(max 160)</small><textarea name="bio" maxlength="160" rows="3" placeholder="Professional opinion distributor.">${esc(u.bio || '')}</textarea></label>${u.x_username ? '' : `<label>X HANDLE <small>(unverified until you log in with X)</small><input name="x_claimed" maxlength="16" value="${esc(u.x_claimed || '')}" placeholder="@handle" /></label>`}${S.mode === 'live' && usesPassword() ? '<label>NAYA PASSWORD <small>(optional · 8+ characters)</small><input name="new_password" type="password" minlength="8" maxlength="72" autocomplete="new-password" /></label>' : ''}<button type="submit" class="button button-red button-wide">💾 SAVE</button></form>`, 'post-dialog');
 }
 function memeModal(m) {
   const image = memeImage(m);
@@ -716,7 +718,6 @@ function render() {
   const known = ['/', '/balaks', '/bataks', '/news', '/leaderboard', '/profile', '/cat-council'];
   if (!known.includes(route()) && !route().startsWith('/u/') && !topicOf()) { app().innerHTML = notFound(); achieve('lost'); return; }
   document.body.classList.toggle('dark', isDarkRoute(route()));
-  if (S.pendingEmail && needsLogin()) { app().innerHTML = checkEmailPage(); return; }
   if (needsLogin()) { app().innerHTML = loginPage(); return; }
   if (!me()) { app().innerHTML = `<div class="loading-block"><img src="assets/cat.svg" class="spin-fast" alt=""><p>${esc(pick(C.loading))}</p></div>`; return; }
   if (!me().handle) { app().innerHTML = claimPage(); return; }
@@ -808,7 +809,7 @@ async function applySession(session) {
     const { data: synced } = await S.sb.rpc('claim_reserved_profile');
     if (synced) { if (synced.handle) notice(`👑 RESERVED PROFILE CLAIMED: @${synced.handle}`); data = synced; }
   }
-  S.session = session; S.mode = 'live'; S.pendingEmail = '';
+  S.session = session; S.mode = 'live';
   S.profile = { ...data, suggested: session.user.email?.split('@')[0] };
   await refreshLive();
 }
@@ -1041,6 +1042,72 @@ function enterDemo() {
   S.profile = store.profile; saveStore(); SFX.play('coin'); render();
 }
 
+/* Username + password login. Supabase Auth needs an email, so each username maps to a
+   never-mailed address <username>@<authEmailDomain>. "Confirm email" must be OFF in Supabase. */
+const authDomain = () => String(cfg.authEmailDomain || 'users.kalesh.app').trim().replace(/^@/, '').toLowerCase();
+const authEmail = u => `${u}@${authDomain()}`;
+const usesPassword = () => (S.session?.user?.email || '').toLowerCase().endsWith('@' + authDomain());
+async function sha256(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+function friendlyAuthError(e) {
+  const m = String(e?.message || e || '');
+  if (/invalid login credentials/i.test(m)) return 'Username ya password galat hai.';
+  if (/already (been )?registered|already exists/i.test(m)) return 'Ye username le liya gaya hai. Dusra try karo.';
+  if (/KALESH_USERNAME|database error saving new user/i.test(m)) return 'Ye username nahi mil sakta. Dusra try karo.';
+  if (e?.status === 429 || /rate limit|too many/i.test(m)) return 'Bahut try kar liya. 5 minute baad aao.';
+  if (/password/i.test(m) && /(weak|short|least|characters)/i.test(m)) return 'Password thoda strong rakho (8+ characters).';
+  if (/signups? not allowed|signup.*disabled/i.test(m)) return 'Abhi naye account band hain.';
+  return m.slice(0, 100) || 'Kuch toh gadbad hai.';
+}
+async function passwordAuth(f) {
+  const fd = new FormData(f), signup = f.dataset.mode === 'signup';
+  const u = cleanHandle(fd.get('username')), pw = String(fd.get('password') || ''), pw2 = String(fd.get('password2') || '');
+  const st = $('#pass-status', f), btn = $('button[type=submit]', f);
+  const fail = msg => { st.textContent = '❌ ' + msg; st.className = 'pass-status bad'; SFX.play('error'); };
+  S.authUser = u;
+  if (!HANDLE_RE.test(u)) return fail('Username 3–20 chars, sirf a-z 0-9 _');
+  if (pw.length < 8 || pw.length > 72) return fail('Password 8–72 characters ka ho.');
+  if (signup && pw !== pw2) return fail('Dono password match nahi kar rahe.');
+  if (signup && BANNED_HANDLES.includes(u)) return fail('Ye username sarkar ne reserve kiya hai.');
+  btn.disabled = true; st.textContent = '⏳ Ruko zara…'; st.className = 'pass-status';
+  try {
+    if (!S.sb) { // preview/demo: one local account per browser, password kept as a salted hash
+      const hash = await sha256('kalesh:' + u + ':' + pw);
+      if (signup) {
+        if (store.profile?.handle && store.profile.handle !== u) return fail(`Is browser mein @${store.profile.handle} ka account hai. "Wapas aaya" se login karo.`);
+        S.mode = 'demo'; const taken = await handleTaken(u); S.mode = 'guest';
+        if (taken) return fail(taken);
+        store.profile = { ...(store.profile || {}), id: store.profile?.id || 'me-' + makeId().slice(0, 8), handle: u, avatar_emoji: store.profile?.avatar_emoji || '🐈', gang: store.profile?.gang || null };
+        store.demoPass = hash;
+      } else if (store.profile?.handle !== u || store.demoPass !== hash) return fail('Username ya password galat hai.');
+      saveStore(); enterDemo(); if (signup) notice(`🎮 PLAYER @${u} REGISTERED.`); return;
+    }
+    if (signup) {
+      const { data: problem, error: checkError } = await S.sb.rpc('username_available', { p_username: u });
+      if (checkError) throw checkError;
+      if (problem) return fail(problem);
+      const { data, error } = await S.sb.auth.signUp({ email: authEmail(u), password: pw, options: { data: { username: u } } });
+      if (error) throw error;
+      if (!data.session) return fail('Server pe "Confirm email" ON hai, isliye login nahi hua. Admin ko bolo band kare.');
+      SFX.play('coin'); notice(`🎮 PLAYER @${u} REGISTERED.`);
+    } else {
+      const { error } = await S.sb.auth.signInWithPassword({ email: authEmail(u), password: pw });
+      if (error) throw error;
+      SFX.play('coin');
+    }
+    S.authUser = ''; // onAuthStateChange → applySession → render
+  } catch (e) { fail(friendlyAuthError(e)); }
+  finally { btn.disabled = false; }
+}
+async function changePassword(pw) {
+  if (pw.length < 8 || pw.length > 72) { notice('Password 8–72 characters ka ho.'); return false; }
+  const { error } = await S.sb.auth.updateUser({ password: pw });
+  if (error) { notice('Password change nahi hua: ' + friendlyAuthError(error)); return false; }
+  notice('🔑 Naya password set ho gaya.'); return true;
+}
+
 /* ───────────────────────── events ───────────────────────── */
 document.addEventListener('click', async e => {
   const el = e.target.closest('[data-action]'); if (!el) return;
@@ -1055,7 +1122,7 @@ document.addEventListener('click', async e => {
       const { error } = await S.sb.auth.signInWithOAuth({ provider: cfg.xProvider || 'twitter', options: { redirectTo: location.origin + location.pathname } });
       if (error) notice('X login error: ' + error.message); break;
     }
-    case 'back-login': S.pendingEmail = ''; render(); break;
+    case 'auth-tab': S.authTab = id === 'login' ? 'login' : 'signup'; S.authUser = $('#user-in')?.value || S.authUser; render(); $('#user-in')?.focus(); break;
     case 'choose-gang': await chooseGang(el.dataset.gang); break;
     case 'go-home': go('/'); break;
     case 'go-profile': go('/profile'); break;
@@ -1181,18 +1248,8 @@ document.addEventListener('submit', async e => {
     if (message.length >= 2 && message.length <= 180) await changeGuestbook(message);
   }
   else if (f.id === 'claim-form') await claimHandle(f);
-  else if (f.id === 'bio-form') { const fd = new FormData(f), xc = String(fd.get('x_claimed') || '').trim().replace(/^@/, ''); if (xc && !X_RE.test(xc)) return notice('X handle galat hai.'); const fields = { bio: String(fd.get('bio') || '').trim().slice(0, 160) || null }; if (!me().x_username) fields.x_claimed = xc || null; await updateProfile(fields); }
-  else if (f.id === 'email-form') {
-    if (!S.sb) return notice('Sign-in is temporarily unavailable.');
-    const email = String(new FormData(f).get('email') || '').trim();
-    const btn = f.querySelector('button'); btn.disabled = true;
-    try {
-      const { error } = await S.sb.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin + location.pathname } });
-      if (error) throw error;
-      S.pendingEmail = email; render();
-    } catch (error) { notice('Could not send the sign-in link: ' + String(error.message || error).slice(0, 90)); }
-    finally { btn.disabled = false; }
-  }
+  else if (f.id === 'bio-form') { const fd = new FormData(f), xc = String(fd.get('x_claimed') || '').trim().replace(/^@/, ''); if (xc && !X_RE.test(xc)) return notice('X handle galat hai.'); const fields = { bio: String(fd.get('bio') || '').trim().slice(0, 160) || null }; if (!me().x_username) fields.x_claimed = xc || null; const np = String(fd.get('new_password') || ''); if (np && !(await changePassword(np))) return; await updateProfile(fields); }
+  else if (f.id === 'pass-form') await passwordAuth(f);
 });
 document.addEventListener('change', async e => {
   if (e.target.id === 'sort') { S.sort = e.target.value; renderFeed(); }

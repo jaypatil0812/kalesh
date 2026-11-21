@@ -16,7 +16,7 @@ Open http://localhost:4173. With `config.js` empty you get **demo mode** (everyt
 - **Meme sounds** (`js/sound.js`): boom, air horn, bruh, sad trombone, Indian-news siren, TV-serial "dhum dhum", coin, quack, roar, dhamaka. All synthesized with WebAudio, so there are no copyrighted clips. Sound is off by default; turn it on with 🔇/🔊 in the header.
 - **Meme spawns** (`js/chaos.js`): stickers pop on random clicks, a meme popup window appears every 45–85s, and posts trigger a BREAKING NEWS slam. Toggle with CHAOS ON/OFF in the footer.
 - **Kalesh Tak** (`#/news`): news studio, shouting anchor, a 6-box *mahabahas* debate grid, siren button, and top stories built from the feed. The breaking-news ticker runs on every page.
-- **Identity:** custom site handle (claimed once, arcade "ENTER YOUR NAME" screen), verified 𝕏 handle from X login or a self-reported one for email users (marked *unverified*), titles from a points ladder or assigned by an admin.
+- **Identity:** username + password signup (the username is your permanent handle), or X login followed by the arcade "ENTER YOUR NAME" screen. Verified 𝕏 handle from X login or a self-reported one for email users (marked *unverified*), titles from a points ladder or assigned by an admin.
 - **Profiles as film posters** (`#/profile`, public at `#/u/<handle>`), with fake awards (achievements).
 - **Reserved VIP handles:** pre-create a profile for an X account; only that X account can claim it by logging in with X. Share `#/u/<handle>`; logged-out visitors can see it.
 - **Easter eggs:** type `kalesh`, `billi`, `quack`, `siren`, `drama` or `aura` anywhere. Konami code → arcade CRT mode. Click the logo 5× → dramatic zoom. Poke the cat 7× → Cat Council. Search `gta` or `26`. Use the gang-switch button on your profile. Click the 26 footer. Press the meme bomb 10×. Doom-scroll for a while.
@@ -26,10 +26,10 @@ All the jokes live in `js/memes.js`. Edit that file to refresh memes, news lines
 
 The poster redesign uses a curated set from the supplied meme CSV. The media list, CSV IDs and sources are in `js/meme-media.js`. The local GIFs have static alternatives for reduced-motion visitors. The intermission can be replayed from the entrance, and the sound switch controls all effects.
 
-## Go live (Supabase: email + X login)
+## Go live (Supabase: username/password + X login)
 
 1. Create a Supabase project. In the SQL editor, run `supabase-schema.sql` once (written for a **fresh** project).
-2. **Email login:** Authentication → Providers → Email (on by default). The site uses magic links.
+2. **Username + password login:** run `supabase/migrations/001_username_auth.sql`. Then go to Authentication → Providers → Email: keep it **on** and turn **"Confirm email" off**. Each username is stored in Supabase Auth as `<username>@<authEmailDomain>` (set in `config.js`; pick it once and never change it). No mail is sent, so there's no "forgot password". Reset passwords with the SQL at the bottom of that migration. Users can change their own password in the bio editor.
 3. **X login:** create an app in the X developer portal, then enable the Twitter / X provider in Supabase → Authentication → Providers with the X client ID and secret. Set the X app's callback URL to the one Supabase shows (`https://<ref>.supabase.co/auth/v1/callback`). If your Supabase shows the "X / Twitter (OAuth 2.0)" provider, set `xProvider: 'x'` in `config.js`.
 4. Authentication → URL Configuration: add `http://localhost:4173` and your production domain to the redirect allow-list.
 5. Put the project URL and **anon/publishable** key in `config.js`. Never put the service_role key or the X secret there.

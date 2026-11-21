@@ -288,3 +288,22 @@ a.rank-mini { text-decoration: none; color: inherit; }
 }
 
 .mobile-nav{grid-template-columns:repeat(5,1fr)}
+
+/* ── username + password login ── */
+.auth-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 14px 0 12px; border: 2px solid var(--ink, #291716); }
+.auth-tabs button { border: 0; background: transparent; color: var(--ink, #291716); font: 800 13px/1 'DM Sans', system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; padding: 11px 6px; cursor: pointer; }
+.auth-tabs button.on { background: var(--ink, #291716); color: var(--cinema-gold, #fac85e); }
+.auth-tabs button:focus-visible { outline: 3px solid var(--cinema-gold, #fac85e); outline-offset: -3px; }
+.pass-form { display: grid; gap: 6px; }
+.pass-form label { font: 800 11px/1 'Space Mono', monospace; letter-spacing: .08em; color: #674439; margin-top: 4px; }
+.pass-form input { width: 100%; min-width: 0; border: 2px solid var(--ink, #291716); background: #fffaf0; color: var(--ink, #291716); font: 600 16px 'DM Sans', system-ui, sans-serif; padding: 10px 12px; border-radius: 0; }
+.pass-form input:focus { outline: 3px solid var(--cinema-gold, #fac85e); outline-offset: 0; }
+.pass-handle { display: flex; align-items: stretch; }
+.pass-handle span { display: grid; place-items: center; padding: 0 10px; background: var(--ink, #291716); color: var(--cinema-gold, #fac85e); font: 900 16px 'Archivo Black', sans-serif; }
+.pass-handle input { border-left: 0; }
+.pass-status { min-height: 1.3em; margin: 4px 0 6px; font-size: .86rem; color: #674439; }
+.pass-status.bad { color: var(--cinema-red, #8d241b); font-weight: 700; }
+.auth-or { margin: 14px 0 8px; text-align: center; font: 700 11px 'Space Mono', monospace; letter-spacing: .12em; text-transform: uppercase; color: #674439; }
+.auth-demo { display: block; width: 100%; margin-top: 12px; border: 0; background: none; color: var(--ink, #291716); font: 700 14px 'DM Sans', system-ui, sans-serif; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.auth-demo:hover { color: var(--cinema-red, #8d241b); }
+.cinema-side .login-panel-inner h2 { font-size: clamp(30px, 3.4vw, 52px); }
