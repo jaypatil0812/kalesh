@@ -1,0 +1,27 @@
+# Files Cloudflare should NOT serve publicly (repo-only / backend).
+# Same syntax as .gitignore. Everything else in the repo root is served as the website.
+
+# Backend + database
+supabase/
+*.sql
+integrations/
+
+# Old version
+_v1_backup/
+
+# Repo / tooling files
+.git/
+.github/
+.claude/
+.gitignore
+.assetsignore
+.env*
+node_modules/
+package.json
+package-lock.json
+vercel.json
+wrangler.json
+wrangler.jsonc
+wrangler.toml
+README.md
+*.md
