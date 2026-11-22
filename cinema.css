@@ -47,7 +47,7 @@ body {
   align-items: flex-end;
   position: relative;
   isolation: isolate;
-  background: linear-gradient(0deg, #341008 1%, #5f160dc4 24%, transparent 60%), url('assets/cinema-poster.jpg') center 35% / cover, #962e20;
+  background: linear-gradient(0deg, #341008 1%, #5f160dc4 24%, transparent 60%), url('assets/cinema-poster.webp') center 35% / cover, #962e20;
   color: #fff1c3;
   border: 5px double #f9d493;
   box-shadow: 0 1px 0 1px #592b1b, 0 8px 20px #532b234d;
@@ -136,8 +136,8 @@ body {
 .post-description { font-size: 1rem; }
 .post-photo-wrap { background: #2b1a17; border-color: #9b6743; }
 .gang-poster { border: 5px double #fad48a; box-shadow: var(--shadow); }
-.gang-poster-red { background: linear-gradient(#72261745, #5c170de6), url('assets/cinema-poster.jpg') 12% 36% / auto 110%, #97281d; }
-.gang-poster-blue { background: linear-gradient(#11424a26, #063846eb), url('assets/cinema-poster.jpg') 85% 35% / auto 110%, #103f50; }
+.gang-poster-red { background: linear-gradient(#72261745, #5c170de6), url('assets/cinema-poster.webp') 12% 36% / auto 110%, #97281d; }
+.gang-poster-blue { background: linear-gradient(#11424a26, #063846eb), url('assets/cinema-poster.webp') 85% 35% / auto 110%, #103f50; }
 .gang-mascot { visibility: hidden; }
 .page-title h1 { color: var(--cinema-red); }
 .leader-grid .widget { background: #2e1b25; color: #fff0c3; border: 4px double #d3a247; }
@@ -193,8 +193,8 @@ dialog.boot-screen::backdrop { background: #170d11e8; }
 .gang-feed.one-gang { grid-template-columns: minmax(0, 1fr); }
 .gang-feed .post-actions { flex-wrap: wrap; }
 .gang-feed .spice-grid { grid-template-columns: repeat(5, 1fr); }
-.gang-spotlight { padding: 14px; margin-bottom: 14px; color: #fff0cf; border: 4px double #ebb95e; background: linear-gradient(#4b140bdc, #5d180df0), url('assets/cinema-poster.jpg') 15% 44% / cover; }
-.gang-spotlight.bataks { background: linear-gradient(#0c4051d9, #092c3aee), url('assets/cinema-poster.jpg') 85% 44% / cover; }
+.gang-spotlight { padding: 14px; margin-bottom: 14px; color: #fff0cf; border: 4px double #ebb95e; background: linear-gradient(#4b140bdc, #5d180df0), url('assets/cinema-poster.webp') 15% 44% / cover; }
+.gang-spotlight.bataks { background: linear-gradient(#0c4051d9, #092c3aee), url('assets/cinema-poster.webp') 85% 44% / cover; }
 .gang-spotlight > a { font: 900 1.4rem var(--cinema-face); }
 .gang-spotlight ol { padding: 0; margin: 10px 0 0; list-style: none; }
 .gang-spotlight li { padding: 3px 0; overflow-wrap: anywhere; }
@@ -208,8 +208,8 @@ dialog.boot-screen::backdrop { background: #170d11e8; }
 .breaking-flash .bf-center { pointer-events: auto; cursor: pointer; transform: none; animation: toast-rise .45s ease-out; width: 100%; overflow-wrap: anywhere; }
 .bf-center img, .news-meme img { max-height: 155px; max-width: 100%; object-fit: contain; margin: 8px auto; }
 .news-meme { display: grid; justify-items: center; margin: 12px 0; padding: 12px; border: 3px double var(--cinema-gold); text-align: center; }
-.profile-banner.balaks, .profile-banner.bataks { background: linear-gradient(transparent, #4d170eaa), url('assets/cinema-poster.jpg') 15% 40% / cover; }
-.profile-banner.bataks { background: linear-gradient(#14506429, #082d46a8), url('assets/cinema-poster.jpg') 85% 40% / cover; }
+.profile-banner.balaks, .profile-banner.bataks { background: linear-gradient(transparent, #4d170eaa), url('assets/cinema-poster.webp') 15% 40% / cover; }
+.profile-banner.bataks { background: linear-gradient(#14506429, #082d46a8), url('assets/cinema-poster.webp') 85% 40% / cover; }
 .toast { text-align: left; }
 
 /* Printed newsprint, a cinema lobby scoreboard, and a cable-TV control room. */
@@ -231,7 +231,7 @@ body[data-page="profile"]:not(.dark) {
   color: #351f1d;
   border: 5px double #ac763d;
   background: linear-gradient(90deg, #f6e5c0 38%, #f6e5c0a0 67%, #f6e5c026),
-    url('assets/broadcast-poster.jpg') 80% 33% / cover, #f6e5c0;
+    url('assets/broadcast-poster.webp') 80% 33% / cover, #f6e5c0;
 }
 .editorial-heading h1, .post-card h3, .broadcast-cover h2 {
   font-family: Fraunces, Georgia, serif;
@@ -260,7 +260,7 @@ body[data-page="leaderboard"] .leader-footnote { color: #f9dda9; }
 .gif-avatar-picker img { width: 100%; aspect-ratio: 1.25; object-fit: contain; background: #1a1317; }
 .gif-avatar-picker span { display: block; padding: 4px; font-size: .8rem; }
 .broadcast-desk { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); margin: 14px 0; border: 5px double #f0ad5d; background: #201129; }
-.broadcast-cover { display: flex; align-items: end; min-height: 270px; padding: 18px; background: linear-gradient(0deg,#220825 4%,transparent 78%), url('assets/broadcast-poster.jpg') 50% 45% / cover, #502454; }
+.broadcast-cover { display: flex; align-items: end; min-height: 270px; padding: 18px; background: linear-gradient(0deg,#220825 4%,transparent 78%), url('assets/broadcast-poster.webp') 50% 45% / cover, #502454; }
 .broadcast-cover h2 { font-size: clamp(32px, 5vw, 60px); color: #ffe28c; margin: 0; }
 .broadcast-cover small { font: 600 1rem 'Barlow Condensed', sans-serif; }
 .broadcast-controls { padding: 16px; }
@@ -273,7 +273,7 @@ body[data-page="leaderboard"] .leader-footnote { color: #f9dda9; }
 .sound-library > div { display: flex; align-items: center; justify-content: space-between; gap: 7px; padding: 6px; }
 .sound-library button { text-align: left; color: #fff3df; background: #4b2549; border: 1px solid #8e5b7d; padding: 7px; }
 .x-desk { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); margin: 18px 0; border: 5px double #bd8550; background: #222032; color: #fff0d5; }
-.x-desk-cover { padding: clamp(18px, 4vw, 48px); background: linear-gradient(90deg, #22172df5, #22172d73), url('assets/timeline-poster.jpg') 55% 42% / cover, #381d31; }
+.x-desk-cover { padding: clamp(18px, 4vw, 48px); background: linear-gradient(90deg, #22172df5, #22172d73), url('assets/timeline-poster.webp') 55% 42% / cover, #381d31; }
 .x-desk-cover h2 { font: 700 clamp(26px, 5vw, 56px)/1.02 Fraunces, Georgia, serif; margin: 9px 0; }
 .x-desk-cover p { margin-bottom: 13px; }
 .x-desk-list { display: grid; align-content: center; padding: 16px; gap: 8px; }
@@ -294,10 +294,10 @@ body[data-page="leaderboard"] .leader-footnote { color: #f9dda9; }
 
 /* The feed reads like a cinema programme. Each gang gets its own poster. */
 .gang-spotlight.balaks, .gang-poster-red, .war-side.balak-war, .profile-banner.balaks {
-  background: linear-gradient(90deg, #581313eb 27%, #60190842), url('assets/balaks-poster.jpg') right 35% / cover, #802020;
+  background: linear-gradient(90deg, #581313eb 27%, #60190842), url('assets/balaks-poster.webp') right 35% / cover, #802020;
 }
 .gang-spotlight.bataks, .gang-poster-blue, .war-side.batak-war, .profile-banner.bataks {
-  background: linear-gradient(90deg, #081e57ed 27%, #082f6a3d), url('assets/bataks-poster.jpg') right 38% / cover, #194673;
+  background: linear-gradient(90deg, #081e57ed 27%, #082f6a3d), url('assets/bataks-poster.webp') right 38% / cover, #194673;
 }
 .gang-poster-red, .gang-poster-blue { background-position: center, center 27%; }
 .gang-spotlight { min-height: 168px; padding: 16px; }

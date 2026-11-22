@@ -9,7 +9,7 @@
 const $ = (s, r = document) => r.querySelector(s);
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const safeURL = v => { try { const u = new URL(v); return /^https?:$/.test(u.protocol) ? u.href : ''; } catch { return ''; } };
-const safeImg = v => /^(?:assets\/memes\/[a-z]+\.(?:jpe?g|png|gif)|data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+)$/.test(String(v)) ? String(v) : safeURL(v);
+const safeImg = v => /^(?:assets\/memes\/[a-z-]+\.(?:jpe?g|png|gif|webp)|data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+)$/.test(String(v)) ? String(v) : safeURL(v);
 const isXURL = v => { try { const u = new URL(v); return ['x.com', 'www.x.com', 'twitter.com', 'www.twitter.com', 'mobile.twitter.com', 'mobile.x.com'].includes(u.hostname) && /\/status\/\d+/.test(u.pathname); } catch { return false; } };
 const makeId = () => globalThis.crypto?.randomUUID?.() || 'id_' + Date.now() + '_' + Math.random().toString(36).slice(2);
 const pick = a => a[Math.floor(Math.random() * a.length)];
@@ -70,14 +70,14 @@ function demoDeskPosts() {
       demoTweet('1900000000000000003', 'standup_sharma', 'Standup Sharma (demo)', '', 0.8, 'Manager has replied “let’s take this offline”. The thread is now offline. Like my career.', [], { likes: 8800, retweets: 1200, replies: 1500 })
     ], { spice: 8.6, count: 14, likes: 230 }),
     deskPost('demo-desk-single', 3, 'balaks', 'BREAKING: @chai_vs_coffee ka naya bayaan — “filter coffee is just chai that went to IIT”', '', ['food', 'bangalore'], [
-      demoTweet('1900000000000000010', 'chai_vs_coffee', 'Chai vs Coffee (demo)', '', 3.2, 'filter coffee is just chai that went to IIT and never called home', [{ type: 'photo', url: 'assets/memes/disaster.png' }], { likes: 15300, retweets: 2900, replies: 4100, views: 1200000 })
+      demoTweet('1900000000000000010', 'chai_vs_coffee', 'Chai vs Coffee (demo)', '', 3.2, 'filter coffee is just chai that went to IIT and never called home', [{ type: 'photo', url: 'assets/memes/disaster.webp' }], { likes: 15300, retweets: 2900, replies: 4100, views: 1200000 })
     ], { spice: 9.2, count: 19, likes: 410 })
   ];
 }
 /* Demo stand-in for Supabase Realtime: these arrive while the feed is open, once per browser. */
 const DEMO_WIRE = [
   () => deskPost('demo-wire-1', 0, 'balaks', 'Sootron ke hawale se: @pg_owner_ji — “WiFi password change kar diya, rent bhi”', 'Fictional demo: this post arrived live, like a Realtime insert from the pipeline.', ['bangalore', 'rent'], [
-    demoTweet('1900000000000000101', 'pg_owner_ji', 'PG Owner Ji (demo)', '', 0, 'WiFi password change kar diya hai. Naya password: rent_bhar_do_2026. Rent bhi change kar diya hai.', [{ type: 'photo', url: 'assets/memes/harold.png' }], { likes: 980, retweets: 120, replies: 340 })
+    demoTweet('1900000000000000101', 'pg_owner_ji', 'PG Owner Ji (demo)', '', 0, 'WiFi password change kar diya hai. Naya password: rent_bhar_do_2026. Rent bhi change kar diya hai.', [{ type: 'photo', url: 'assets/memes/harold.webp' }], { likes: 980, retweets: 120, replies: 340 })
   ]),
   () => deskPost('demo-wire-2', 0, 'bataks', '“Ye meeting email ho sakti thi” — @calendar_kiler. Popcorn ready rakho 🍿', 'Fictional demo: Apify-style auto-published post (engagement over the threshold).', ['office'], [
     demoTweet('1900000000000000102', 'calendar_kiler', 'Calendar Killer (demo)', '', 0, 'Ye meeting email ho sakti thi. Ye email WhatsApp ho sakta tha. Ye WhatsApp seen-zone ho sakta tha.', [], { likes: 23100, retweets: 4100, replies: 900, views: 2400000 })
@@ -352,7 +352,7 @@ async function openXMedia(post) {
   }
 }
 /* ── tweet snapshots (public.post_tweets rows, or demo rows of the same shape) ── */
-const tweetMediaURL = v => { const s = String(v || ''); return /^https:\/\/(pbs|video)\.twimg\.com\/[^\s"'<>]+$/.test(s) || /^assets\/memes\/[a-z]+\.(?:jpe?g|png|gif)$/.test(s) ? s : ''; };
+const tweetMediaURL = v => { const s = String(v || ''); return /^https:\/\/(pbs|video)\.twimg\.com\/[^\s"'<>]+$/.test(s) || /^assets\/memes\/[a-z-]+\.(?:jpe?g|png|gif|webp)$/.test(s) ? s : ''; };
 const tweetAvatarURL = v => { const s = String(v || ''); return /^https:\/\/(pbs|abs)\.twimg\.com\/[^\s"'<>]+$/.test(s) ? s : ''; };
 const tweetsOf = p => (Array.isArray(p.tweets) ? p.tweets : []).slice().sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
 function tweetMetrics(m) {
