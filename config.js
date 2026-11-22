@@ -8,6 +8,6 @@
 window.KALESH_CONFIG = {
   supabaseUrl: 'https://xfbjwvwwgvptpvygauul.supabase.co',
   supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmYmp3dnd3Z3ZwdHB2eWdhdXVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyNzE4NDksImV4cCI6MjExMDg0Nzg0OX0.xstwSdIBaALJsoGFH-wqpybo0MxBjJQAXxxN3cOptqU',
-  xProvider: 'twitter',
+  xProvider: 'x',
   authEmailDomain: 'users.kalesh.app'
 };
